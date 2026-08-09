@@ -1,0 +1,504 @@
+CIVICLENS — PHASE 1 DEVELOPMENT LOG Geospatial Civic Services &
+Municipal Tax Intelligence Platform
+
+Project Repository: civic-lens Phase: 1 — Foundation Goal: Establish the
+basic full-stack application structure and verify that the React
+frontend can communicate with the Express backend.
+
+============================================================ PHASE 1
+OVERVIEW ============================================================
+
+Phase 1 focuses only on the application foundation.
+
+Components introduced: 1. Git + GitHub 2. React + Vite frontend 3.
+Node.js + Express backend 4. Backend middleware 5. REST health-check
+endpoint 6. Axios API client 7. Frontend-to-backend communication 8. Git
+ignore rules and first commit
+
+We are deliberately NOT adding the database, authentication, GIS map,
+tax modules, AI, or deployment today. Those belong to later phases.
+
+============================================================ STEP 1 —
+CREATE THE PROJECT REPOSITORY
+============================================================
+
+Repository name: civic-lens
+
+Purpose: This repository stores the complete source code and development
+history of CivicLens.
+
+Why GitHub? GitHub provides version control, collaboration, issue
+tracking, and a public portfolio that recruiters can inspect.
+
+Commands:
+
+    mkdir civic-lens
+    cd civic-lens
+    git init
+    git branch -M main
+
+Remote repository:
+
+    git remote add origin https://github.com/YOUR_USERNAME/civic-lens.git
+
+What I learned: Git tracks changes locally, while GitHub hosts the
+repository remotely. The main branch is the primary stable development
+branch.
+
+Status: [ ] Completed
+
+============================================================ STEP 2 —
+CREATE THE REACT FRONTEND
+============================================================
+
+Technology: React + Vite
+
+Command:
+
+    npm create vite@latest frontend
+
+Selected: Framework: React Variant: JavaScript
+
+Then:
+
+    cd frontend
+    npm install
+    npm run dev
+
+Why React? React lets us build the CivicLens interface using reusable
+components and manage dynamic application state.
+
+Why Vite? Vite provides a fast development server and modern build
+tooling for React. It is simpler and faster to start with than older
+React tooling.
+
+Why JavaScript? JavaScript keeps the initial project accessible while we
+learn the architecture. TypeScript can be considered later if the
+project scope benefits from it.
+
+Expected development URL: http://localhost:5173
+
+Status: [ ] Completed
+
+============================================================ STEP 3 —
+INSTALL FRONTEND DEPENDENCIES
+============================================================
+
+Packages:
+
+    react-router-dom
+    axios
+    leaflet
+    react-leaflet
+    lucide-react
+
+Installation:
+
+    npm install react-router-dom
+    npm install axios
+    npm install leaflet react-leaflet
+    npm install lucide-react
+
+Why each package?
+
+react-router-dom Handles navigation between pages such as Login,
+Dashboard, Properties, Bills, and Admin pages.
+
+axios Provides a convenient HTTP client for communicating with the
+CivicLens backend API.
+
+leaflet Provides the core interactive mapping library that will later
+display properties geographically.
+
+react-leaflet Provides React components for integrating Leaflet maps
+into the React application.
+
+lucide-react Provides reusable icons for the user interface without
+creating icons manually.
+
+Note: Leaflet and React Leaflet are installed now because GIS is a core
+part of CivicLens, although the map itself belongs to a later phase.
+
+Status: [ ] Completed
+
+============================================================ STEP 4 —
+CREATE THE BACKEND
+============================================================
+
+Technology: Node.js + Express
+
+Commands:
+
+    cd ..
+    mkdir backend
+    cd backend
+    npm init -y
+
+Why Node.js? Node.js allows us to build the server-side application
+using JavaScript, giving the project one primary programming language
+across frontend and backend.
+
+Why Express? Express is a lightweight Node.js framework for building
+REST APIs, routing requests, and applying middleware.
+
+Installed packages:
+
+    npm install express cors dotenv helmet morgan bcryptjs jsonwebtoken pg
+
+Development dependency:
+
+    npm install -D nodemon
+
+Why each package?
+
+express Creates the HTTP server and REST API.
+
+cors Allows the frontend and backend running on different local ports to
+communicate during development.
+
+dotenv Loads configuration and secrets from environment variables
+instead of hard-coding them.
+
+helmet Adds common HTTP security headers to improve the application’s
+security baseline.
+
+morgan Logs HTTP requests during development, making API debugging
+easier.
+
+bcryptjs Will be used later to securely hash user passwords.
+
+jsonwebtoken Will be used later for JWT-based authentication.
+
+pg PostgreSQL client for Node.js. It will be used when we add the
+database in Phase 1/2 depending on the final setup.
+
+nodemon Automatically restarts the backend when source files change
+during development.
+
+Status: [ ] Completed
+
+============================================================ STEP 5 —
+CREATE THE BACKEND STRUCTURE
+============================================================
+
+Initial structure:
+
+    backend/
+    ├── src/
+    │   ├── config/
+    │   ├── controllers/
+    │   ├── middleware/
+    │   ├── models/
+    │   ├── routes/
+    │   ├── services/
+    │   └── app.js
+    ├── .env
+    ├── .env.example
+    └── package.json
+
+Why separate folders?
+
+config Database and application configuration will live here.
+
+controllers Handles request/response logic without putting everything
+inside route files.
+
+middleware Contains reusable request-processing logic such as
+authentication and validation.
+
+models Represents database-related data structures and operations.
+
+routes Defines API endpoints and connects them to controllers.
+
+services Contains business logic and external API integration.
+
+app.js Main entry point where Express is configured.
+
+Why organize early? A small project can work with everything in one
+file, but CivicLens is intended to grow into a multi-feature
+application. Early separation makes the code easier to maintain.
+
+Status: [ ] Completed
+
+============================================================ STEP 6 —
+CREATE THE EXPRESS SERVER
+============================================================
+
+File:
+
+    backend/src/app.js
+
+Core setup:
+
+    const express = require("express");
+    const cors = require("cors");
+    const helmet = require("helmet");
+    const morgan = require("morgan");
+    require("dotenv").config();
+
+    const app = express();
+
+Middleware used:
+
+    app.use(cors());
+    app.use(helmet());
+    app.use(morgan("dev"));
+    app.use(express.json());
+
+Why middleware?
+
+cors Allows requests from the React development server.
+
+helmet Adds security-related HTTP headers.
+
+morgan Displays incoming requests in the terminal for debugging.
+
+express.json() Allows Express to read JSON request bodies.
+
+dotenv Makes environment configuration available through process.env.
+
+Status: [ ] Completed
+
+============================================================ STEP 7 —
+CREATE THE HEALTH CHECK API
+============================================================
+
+Endpoint:
+
+    GET /api/health
+
+Purpose: This endpoint verifies that the backend server is running.
+
+Example response:
+
+    {
+      "success": true,
+      "message": "CivicLens API is running",
+      "timestamp": "..."
+    }
+
+Why create a health endpoint? It gives us a simple way to test the
+backend independently before building real business features.
+
+This pattern is also useful in production systems for monitoring whether
+a service is alive.
+
+Test URL:
+
+    http://localhost:5000/api/health
+
+Expected result: A JSON response confirming that the CivicLens API is
+running.
+
+Status: [ ] Completed
+
+============================================================ STEP 8 —
+ADD DEVELOPMENT SCRIPTS
+============================================================
+
+In backend/package.json:
+
+    "scripts": {
+      "start": "node src/app.js",
+      "dev": "nodemon src/app.js"
+    }
+
+Commands:
+
+    npm run dev
+    npm start
+
+Why two commands?
+
+npm run dev Used during development. Nodemon automatically restarts the
+server when files change.
+
+npm start Runs the backend normally without the development
+auto-reloader.
+
+Status: [ ] Completed
+
+============================================================ STEP 9 —
+CREATE THE FRONTEND API CLIENT
+============================================================
+
+File:
+
+    frontend/src/services/api.js
+
+Axios instance:
+
+    import axios from "axios";
+
+    const api = axios.create({
+      baseURL: "http://localhost:5000/api",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    export default api;
+
+Why create a shared Axios instance? Instead of writing the backend URL
+repeatedly throughout the application, all API requests can use one
+configured client.
+
+For example:
+
+    api.get("/health")
+
+Later we can add: - authentication headers - interceptors - centralized
+error handling - environment-based API URLs
+
+This keeps API communication consistent across the frontend.
+
+Status: [ ] Completed
+
+============================================================ STEP 10 —
+CONNECT REACT TO EXPRESS
+============================================================
+
+The React application calls:
+
+    GET /health
+
+through the shared Axios client.
+
+Flow:
+
+    React
+      |
+      | HTTP GET
+      v
+    Axios
+      |
+      v
+    Express API
+      |
+      v
+    /api/health
+      |
+      v
+    JSON response
+      |
+      v
+    React displays API status
+
+Why this matters: This is the first real full-stack connection in
+CivicLens.
+
+The frontend is no longer an isolated UI. It can communicate with the
+backend server.
+
+Expected frontend message:
+
+    CivicLens API is running
+
+Status: [ ] Completed
+
+============================================================ STEP 11 —
+CREATE .gitignore
+============================================================
+
+At the project root, create:
+
+    .gitignore
+
+Recommended entries:
+
+    node_modules/
+    .env
+    dist/
+    *.log
+    .DS_Store
+
+Why?
+
+node_modules/ Dependencies can be recreated using package.json and
+should not be committed.
+
+.env Environment variables may contain passwords, API keys, or other
+secrets.
+
+dist/ Build output can be generated when needed.
+
+*.log Temporary log files do not belong in source control.
+
+.DS_Store macOS-generated metadata that is irrelevant to the project.
+
+Security note: Never commit real passwords, database credentials, JWT
+secrets, or API keys.
+
+Status: [ ] Completed
+
+============================================================ STEP 12 —
+FIRST GIT COMMIT
+============================================================
+
+Commands:
+
+    git add .
+    git commit -m "feat: initialize CivicLens full-stack application"
+    git push -u origin main
+
+Why commit now? This creates a clean baseline for the project. Future
+changes can be compared against this working version.
+
+Commit message format: feat: … fix: … docs: … refactor: … test: …
+
+These prefixes make the Git history easier to understand.
+
+Status: [ ] Completed
+
+============================================================ PHASE 1
+ARCHITECTURE
+============================================================
+
+Current architecture:
+
+    ┌──────────────────────────────┐
+    │        React Frontend        │
+    │      Vite Development App    │
+    │                              │
+    │  UI + Routing + API Client   │
+    └──────────────┬───────────────┘
+                   │
+                   │ HTTP / REST
+                   ▼
+    ┌──────────────────────────────┐
+    │       Express Backend        │
+    │                              │
+    │ Middleware + API Routes      │
+    │ Health Check                 │
+    └──────────────────────────────┘
+
+Database and external authority services will be added in later phases.
+
+============================================================ PHASE 1
+COMPLETION CHECKLIST
+============================================================
+
+[ ] Git repository created [ ] GitHub remote connected [ ] React/Vite
+frontend created [ ] Frontend dependencies installed [ ] Express backend
+created [ ] Backend dependencies installed [ ] Backend folder structure
+created [ ] Express middleware configured [ ] Health-check endpoint
+created [ ] Backend development script created [ ] Axios API client
+created [ ] React successfully calls Express [ ] .gitignore created [ ]
+First Git commit pushed to GitHub
+
+
+PHASE 1 END STATE ============================================================
+
+When Phase 1 is complete:
+
+Frontend: http://localhost:5173
+
+Backend: http://localhost:5000
+
+Health check: http://localhost:5000/api/health
+
+Expected result: The React frontend successfully displays confirmation
+from the Express backend.
+
+Next phase: Database architecture with PostgreSQL + PostGIS.
+
