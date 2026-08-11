@@ -1,0 +1,55 @@
+Date: 11 August 2026
+
+Goal:
+Set up the PostgreSQL/PostGIS database foundation for CivicLens.
+
+COMPLETED
+1. Installed PostgreSQL 18.4
+   - Main relational database for CivicLens.
+
+2. Installed PostGIS 3.6.2
+   - Adds geospatial capabilities to PostgreSQL.
+   - Required for property location data and spatial queries.
+
+3. Configured PostgreSQL PATH on Windows
+   - psql and pg_config are now available from PowerShell.
+
+4. Created the CivicLens database
+   - Database name: civiclens
+   - Keeps application data separate from PostgreSQL's default database.
+
+5. Enabled PostGIS in civiclens
+   - PostGIS is available for geographic data.
+
+6. Designed the initial database architecture
+   Core entities:
+   - users
+   - authorities
+   - properties
+   - bills
+   - payments
+
+7. Designed the geospatial property model
+   - Property location will use GEOGRAPHY(POINT, 4326).
+   - A GiST spatial index will support efficient spatial queries.
+
+CURRENT STATUS
+- PostgreSQL: Ready
+- PostGIS: Ready
+- civiclens database: Created
+- Database schema: Designed
+- CivicLens tables: Next step
+- Express → PostgreSQL connection: Next step
+
+KEY LEARNING
+PostgreSQL manages CivicLens's relational data, while PostGIS extends PostgreSQL with geographic data types and spatial operations.
+
+NEXT SESSION
+1. Create the CivicLens tables.
+2. Add relationships and constraints.
+3. Add the spatial index.
+4. Connect Express to PostgreSQL.
+5. Create the first database-backed API.
+
+Note:
+Authentication, frontend database features, GIS map UI, bills UI, and external authority APIs have not been implemented yet. They belong to later phases.
